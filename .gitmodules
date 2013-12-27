@@ -1,0 +1,6 @@
+[submodule "MIDIEvents"]
+	path = MIDIEvents
+	url = https://github.com/nfroidure/MIDIEvents.git
+[submodule "MIDIFile"]
+	path = MIDIFile
+	url = https://github.com/nfroidure/MIDIFile.git
