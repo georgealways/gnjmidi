@@ -5,7 +5,33 @@
 </head>
 <body>
 
-    
-  
+<script src="MIDIFile/dist/MIDIFile.js"></script>
+<script src="midi.js"></script>
+<script src="raf.js"></script>
+
+<script type="text/javascript">
+
+var p = new midi.Player('puppylove.cropped.mid');
+
+midi.onmessage = function(decoded) {
+    console.log(decoded);
+};
+
+p.load(start);
+
+function start() {
+
+    p.setPosition(10000);
+    p.play();
+    loop();
+}
+
+function loop() {
+    requestAnimationFrame(loop);
+    p.update();
+}
+
+</script>  
+
 </body>
 </html>

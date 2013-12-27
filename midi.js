@@ -1,3 +1,6 @@
+// bits of prettymidi
+// https://github.com/nick-thompson/prettymidi
+
 window.midi = (function() {
 
     var listenersCreated = 0;
@@ -41,24 +44,88 @@ window.midi = (function() {
 
     };
 
-    midi.Player = function() {
+    midi.Player = function(path) {
         this.position = 0;
+        this.lastPosition = this.position;
+        this.path = path;
+        this.playing = false;
+        this.time = undefined;
+        this.lastTime = undefined;
     };
 
-    midi.Player.prototype.play = function() {
+    midi.Player.prototype.load = function(callback) {
+        
+        var _this = this;
+        
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', this.path, true);
+        xhr.responseType = 'arraybuffer';
 
+        xhr.onload = function() {
+            
+            _this.buffer = xhr.response;
+            _this.midiFile = new MIDIFile(_this.buffer);
+
+            _this.events = _this.midiFile.getMidiEvents();
+            _this.events.sort(function(a, b) {
+
+                return a.playTime - b.playTime;
+
+            });
+
+            callback && callback();
+
+        };
+
+        xhr.send(null);
+
+    }
+
+    midi.Player.prototype.play = function() {
+        if (this.playing) return;
+        this.playing = true;
+        this.time = this.lastTime = now();
     };
 
     midi.Player.prototype.pause = function() {
-
+        if (!this.playing) return;
+        this.playing = false;
     };
 
     midi.Player.prototype.update = function() {
+        if (this.playing) {
 
+            this.lastTime = this.time;
+            this.time = now();
+
+            this.lastPosition = this.position;
+            this.position += this.time - this.lastTime;
+
+            var t, e;
+
+            for (var i in this.events) {
+                e = this.events[i];
+                t = e.playTime;
+
+                if (t > this.lastPosition && t <= this.position) {
+
+                    onMessage({
+                        data: [
+                            (e.subtype << 4) + e.channel,
+                            e.param1,
+                            e.param2 || 0x00
+                        ]
+                    });              
+
+                }
+            }
+
+        }
     };
 
     midi.Player.prototype.setPosition = function(position) {
-
+        this.position = position;
+        this.lastPosition = position;
     };
 
     function error(msg) {
@@ -131,6 +198,10 @@ window.midi = (function() {
             decoded[param] = msg.data[index + 1];
         });
         return decoded;
+    }
+
+    function now() {
+        return (+ new Date());
     }
 
     if (navigator.requestMIDIAccess) {
