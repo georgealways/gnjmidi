@@ -92,35 +92,40 @@ window.midi = (function() {
         this.playing = false;
     };
 
-    midi.Player.prototype.update = function() {
-        if (this.playing) {
+    midi.Player.prototype.update = function(position) {
 
-            this.lastTime = this.time;
-            this.time = now();
+        if (!this.playing) return;
 
-            this.lastPosition = this.position;
+        this.lastTime = this.time;
+        this.time = now();
+
+        this.lastPosition = this.position;
+        
+        if (position !== undefined) {
             this.position += this.time - this.lastTime;
-
-            var t, e;
-
-            for (var i in this.events) {
-                e = this.events[i];
-                t = e.playTime;
-
-                if (t > this.lastPosition && t <= this.position) {
-
-                    onMessage({
-                        data: [
-                            (e.subtype << 4) + e.channel,
-                            e.param1,
-                            e.param2 || 0x00
-                        ]
-                    });              
-
-                }
-            }
-
+        } else { 
+            this.position = position;
         }
+
+        var t, e;
+
+        for (var i in this.events) {
+            e = this.events[i];
+            t = e.playTime;
+
+            if (t > this.lastPosition && t <= this.position) {
+
+                onMessage({
+                    data: [
+                        (e.subtype << 4) + e.channel,
+                        e.param1,
+                        e.param2 || 0x00
+                    ]
+                });              
+
+            }
+        }
+
     };
 
     midi.Player.prototype.setPosition = function(position) {
