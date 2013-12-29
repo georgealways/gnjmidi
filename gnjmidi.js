@@ -101,7 +101,7 @@ window.midi = (function() {
 
         this.lastPosition = this.position;
         
-        if (position !== undefined) {
+        if (position === undefined) {
             this.position += this.time - this.lastTime;
         } else { 
             this.position = position;
