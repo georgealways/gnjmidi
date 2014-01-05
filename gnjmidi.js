@@ -139,6 +139,12 @@ window.midi = (function() {
         }
     }
 
+    function warn(msg) {
+        return function() {
+            console.warn('MIDI: ' + msg);
+        }
+    }
+
     function onAccess(callback) {        
         
         return function(access) {
@@ -212,7 +218,7 @@ window.midi = (function() {
     if (navigator.requestMIDIAccess) {
         navigator.requestMIDIAccess().then(onAccess(), error('Failed to get midi access'));
     } else { 
-        error('Web MIDI is not enabled')();
+        warn('Web MIDI is not enabled')();
     }
 
     return midi;
