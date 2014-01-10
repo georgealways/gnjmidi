@@ -107,24 +107,34 @@ window.midi = (function() {
             this.position = position;
         }
 
-        var t, e;
+        var t, e, lastEvent;
 
         for (var i in this.events) {
             e = this.events[i];
             t = e.playTime;
 
             if (t > this.lastPosition && t <= this.position) {
-
+                // lastEvent = e;
                 onMessage({
                     data: [
                         (e.subtype << 4) + e.channel,
                         e.param1,
                         e.param2 || 0x00
                     ]
-                });              
-
+                }); 
             }
         }
+
+        // if (lastEvent) {
+        //     onMessage({
+        //         data: [
+        //             (lastEvent.subtype << 4) + lastEvent.channel,
+        //             lastEvent.param1,
+        //             lastEvent.param2 || 0x00
+        //         ]
+        //     });  
+        // }            
+
 
     };
 
