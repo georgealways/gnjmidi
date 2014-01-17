@@ -10,6 +10,8 @@ window.midi = (function() {
 
         access: null,
 
+        debug: false,
+
         types: {
             0x8: { name: "noteOff",           params: ["note", "velocity"] },
             0x9: { name: "noteOn",            params: ["note", "velocity"] },
@@ -21,7 +23,9 @@ window.midi = (function() {
         },
 
         onmessage: function(decoded, raw) {
-
+            if (midi.debug) {
+                console.log(decoded);
+            }
         },
 
         on: function(filter, callback, scope) {
