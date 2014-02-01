@@ -71,11 +71,24 @@ window.midi = (function() {
             _this.midiFile = new MIDIFile(_this.buffer);
 
             _this.events = _this.midiFile.getMidiEvents();
+            _this.events.forEach(function(e, i) {
+                e.data = [
+                        (e.subtype << 4) + e.channel,
+                        e.param1,
+                        e.param2 || 0x00
+                    ];
+                // Store for non-realtime acquisition.
+                var decoded = decodeMessage(e);
+                for (var k in decoded) {
+                    e[k] = decoded[k];
+                }
+            });
             _this.events.sort(function(a, b) {
 
                 return a.playTime - b.playTime;
 
             });
+            console.log(_this.events.slice(0, 20));
 
             callback && callback();
 
@@ -119,13 +132,8 @@ window.midi = (function() {
 
             if (t > this.lastPosition && t <= this.position) {
                 // lastEvent = e;
-                onMessage({
-                    data: [
-                        (e.subtype << 4) + e.channel,
-                        e.param1,
-                        e.param2 || 0x00
-                    ]
-                }); 
+                // e.data has been assigned in Player.load
+                onMessage(e); 
             }
         }
 
