@@ -85,10 +85,13 @@ window.midi = (function() {
             });
             _this.events.sort(function(a, b) {
 
-                return a.playTime - b.playTime;
+                var diff = a.playTime - b.playTime;
+                if (diff == 0) {
+                    return a.type == 'noteOff' ? -1 : 1;
+                }
+                return diff;
 
             });
-            console.log(_this.events.slice(0, 20));
 
             callback && callback();
 
