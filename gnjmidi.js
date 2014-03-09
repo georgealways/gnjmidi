@@ -129,8 +129,7 @@ window.midi = (function() {
 
         var t, e, lastEvent;
 
-        for (var i in this.events) {
-            e = this.events[i];
+        _.each(this.events, function(e) {
             t = e.playTime;
 
             if (t > this.lastPosition && t <= this.position) {
@@ -138,7 +137,7 @@ window.midi = (function() {
                 // e.data has been assigned in Player.load
                 onMessage(e); 
             }
-        }
+        }, this);
 
         // if (lastEvent) {
         //     onMessage({
