@@ -50,7 +50,7 @@ window.midi = (function() {
 
     midi.Player = function(path) {
         this.position = 0;
-        this.lastPosition = this.position;
+        this.lastPosition = -Infinity;
         this.path = path;
         this.playing = false;
         this.time = undefined;
@@ -119,7 +119,6 @@ window.midi = (function() {
         this.lastTime = this.time;
         this.time = now();
 
-        this.lastPosition = this.position;
         
         if (position === undefined) {
             this.position += this.time - this.lastTime;
@@ -138,6 +137,7 @@ window.midi = (function() {
                 onMessage(e); 
             }
         }, this);
+        this.lastPosition = this.position;
 
         // if (lastEvent) {
         //     onMessage({
